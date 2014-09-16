@@ -9,18 +9,17 @@ var CalenderPage;
     var ui = WinJS.UI;
 
     function ready(element, options) {
-        WinJS.Utilities.ready(initScheduler);
+        initScheduler();
         return WinJS.Promise.as(null);
     }
 
     function initScheduler() {
         scheduler.init("scheduler_here", new Date(), "week");
-        var conferences = [];
-        conferences.push({
-            text: "aaa aa a aa",
-            start_date: "16-09-2014 17:00",
-            end_date: "16-09-2014 19:00"
-        });
+        var conferences = [{
+                text: "aaa aa a aa",
+                start_date: "09.16.2014 17:00",
+                end_date: "09.16.2014 19:00"
+            }];
         scheduler.parse(conferences, 'json');
     }
 

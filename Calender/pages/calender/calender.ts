@@ -10,18 +10,17 @@ module CalenderPage {
     declare var scheduler: any;
 
     function ready(element: HTMLElement, options) {
-        WinJS.Utilities.ready(initScheduler)
+        initScheduler();
         return WinJS.Promise.as(null);
     }
 
     function initScheduler() {
         scheduler.init("scheduler_here", new Date(), "week");
-        var conferences = [];
-        conferences.push({
+        var conferences = [{
             text: "aaa aa a aa",
-            start_date: "16-09-2014 17:00",
-            end_date: "16-09-2014 19:00" 
-        });
+            start_date: "09.16.2014 17:00",
+            end_date: "09.16.2014 19:00"
+        }];
         scheduler.parse(conferences, 'json');
     }
 
