@@ -148,9 +148,11 @@
     <Content Include="pages\calender\calender.html" />
     <Content Include="pages\hub\hub.css" />
     <Content Include="pages\hub\hub.html" />
-    <TypeScriptCompile Include="js\components\LocalStorage.ts" />
+    <TypeScriptCompile Include="js\components\IndexedDatabase.ts" />
+    <TypeScriptCompile Include="js\consts\DB.ts" />
     <TypeScriptCompile Include="js\consts\StorageKeys.ts" />
     <TypeScriptCompile Include="js\models\Note.ts" />
+    <TypeScriptCompile Include="js\services\notes\NoteService.ts" />
     <TypeScriptCompile Include="js\viewModels\DHtmlxNote.ts" />
     <TypeScriptCompile Include="pages\calender\calender.ts" />
     <TypeScriptCompile Include="pages\hub\hub.ts" />

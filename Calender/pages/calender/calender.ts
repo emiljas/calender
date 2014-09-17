@@ -2,12 +2,13 @@
 /// <reference path="../../Scripts/typings/winjs/winjs.d.ts"/>
 /// <reference path='../../js/data.ts'/>
 /// <reference path="../../js/viewmodels/dhtmlxnote.ts" />
+/// <reference path="../../js/services/notes/noteservice.ts" />
 
 module CalenderPage {
     "use strict";
 
-    var ui = WinJS.UI;
     declare var scheduler: any;
+    var ui = WinJS.UI;
 
     function ready(element: HTMLElement, options) {
         initScheduler();

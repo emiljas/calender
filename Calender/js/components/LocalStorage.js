@@ -1,24 +1,30 @@
 ﻿/// <reference path="../../Scripts/typings/winrt/winrt.d.ts"/>
 /// <reference path="../../Scripts/typings/winjs/winjs.d.ts"/>
-var LocalStorage = (function () {
-    function LocalStorage() {
-        this.storage = WinJS.Application.local;
-    }
-    LocalStorage.prototype.exists = function (key) {
-        return this.storage.exists(key);
-    };
+var Components;
+(function (Components) {
+    "use strict";
 
-    LocalStorage.prototype.remove = function (key) {
-        return this.storage.remove(key);
-    };
+    var LocalStorage = (function () {
+        function LocalStorage() {
+            this.storage = Windows.Storage.ApplicationData.current.localSettings.values;
+        }
+        LocalStorage.prototype.exists = function (key) {
+            return this.storage.hasKey(key);
+        };
 
-    LocalStorage.prototype.retrive = function (key) {
-        return this.storage.readText(key);
-    };
+        LocalStorage.prototype.remove = function (key) {
+            this.storage.remove(key);
+        };
 
-    LocalStorage.prototype.store = function (key, text) {
-        return this.storage.writeText(key, text);
-    };
-    return LocalStorage;
-})();
+        LocalStorage.prototype.retrive = function (key) {
+            return this.storage.lookup(key);
+        };
+
+        LocalStorage.prototype.store = function (key, value) {
+            this.storage.insert(key, value);
+        };
+        return LocalStorage;
+    })();
+    Components.LocalStorage = LocalStorage;
+})(Components || (Components = {}));
 //# sourceMappingURL=LocalStorage.js.map

@@ -2,6 +2,7 @@
 /// <reference path="../../Scripts/typings/winjs/winjs.d.ts"/>
 /// <reference path='../../js/data.ts'/>
 /// <reference path="../../js/viewmodels/dhtmlxnote.ts" />
+/// <reference path="../../js/services/notes/noteservice.ts" />
 var CalenderPage;
 (function (CalenderPage) {
     "use strict";
