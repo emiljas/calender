@@ -36,8 +36,8 @@ var Components;
 
         IndexedDatabase.createObjectStore = function (name) {
             var store = IndexedDatabase.db.createObjectStore(name, {
-                keyPath: "ID",
-                autoIncrement: true
+                keyPath: "id",
+                autoIncrement: false
             });
         };
 
@@ -45,8 +45,60 @@ var Components;
             this.waitForDatabase(function () {
                 var trans = IndexedDatabase.db.transaction([DB.ObjectStore.Note], "readwrite");
                 var store = trans.objectStore(DB.ObjectStore.Note);
-                var request = store.put(item);
-                trans.oncomplete = done;
+                var request = store.add(item);
+                if (done)
+                    trans.oncomplete = done;
+            });
+        };
+
+        IndexedDatabase.prototype.delete = function (id, done) {
+            this.waitForDatabase(function () {
+                var db = IndexedDatabase.db;
+                var trans = db.transaction([DB.ObjectStore.Note], "readwrite");
+                var store = trans.objectStore(DB.ObjectStore.Note);
+                var request = store.delete("" + id);
+
+                trans.oncomplete = function () {
+                };
+
+                trans.onerror = function () {
+                };
+                //if(done)
+                //    trans.oncomplete = done;
+            });
+        };
+
+        IndexedDatabase.prototype.update = function (item, done) {
+            var _this = this;
+            this.waitForDatabase(function () {
+                _this.delete(item.id, function () {
+                    _this.insert(item, done);
+                });
+            });
+        };
+
+        IndexedDatabase.prototype.getAll = function (done) {
+            this.waitForDatabase(function () {
+                var items = [];
+                var db = IndexedDatabase.db;
+                var trans = db.transaction([DB.ObjectStore.Note], "readwrite");
+                var store = trans.objectStore(DB.ObjectStore.Note);
+
+                var keyRange = IDBKeyRange.lowerBound(0);
+                var cursorRequest = store.openCursor(keyRange);
+
+                cursorRequest.onsuccess = function (e) {
+                    var result = e.target.result;
+                    if (!!result == false) {
+                        done(items);
+                        return;
+                    }
+
+                    items.push(result.value);
+                    result.continue();
+                };
+
+                cursorRequest.onerror = indexedDB.onerror;
             });
         };
 
@@ -59,29 +111,6 @@ var Components;
                 setTimeout(wait, 100);
             else
                 after();
-        };
-
-        IndexedDatabase.prototype.getAll = function (done) {
-            var items = [];
-            var db = IndexedDatabase.db;
-            var trans = db.transaction([DB.ObjectStore.Note], "readwrite");
-            var store = trans.objectStore(DB.ObjectStore.Note);
-
-            var keyRange = IDBKeyRange.lowerBound(0);
-            var cursorRequest = store.openCursor(keyRange);
-
-            cursorRequest.onsuccess = function (e) {
-                var result = e.target.result;
-                if (!!result == false) {
-                    done(items);
-                    return;
-                }
-
-                items.push(result.value);
-                result.continue();
-            };
-
-            cursorRequest.onerror = indexedDB.onerror;
         };
         IndexedDatabase.db = null;
         return IndexedDatabase;

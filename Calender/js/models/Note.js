@@ -3,8 +3,26 @@
     "use strict";
 
     var Note = (function () {
-        function Note() {
+        function Note(values) {
+            if (values) {
+                this.id = values.id;
+                this.title = values.title;
+                this.startDate = values.startDate;
+                this.endDate = values.endDate;
+            }
         }
+        Object.defineProperty(Note.prototype, "ID", {
+            get: function () {
+                return this.id;
+            },
+            set: function (value) {
+                this.id = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+
         Object.defineProperty(Note.prototype, "Title", {
             get: function () {
                 return this.title;

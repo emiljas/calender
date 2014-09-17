@@ -1,28 +1,24 @@
 ﻿/// <reference path="../../scripts/typings/jasmine/jasmine.d.ts" />
 /// <reference path="../../../calender/js/viewmodels/dhtmlxnote.ts" />
 describe("DHtmlxNote", function () {
-    var text = "TEXT";
-    var start_date = "06.01.2013 14:00";
-    var end_date = "07.01.2013 18:00";
+    var date = new Date(2013, 2, 12, 21, 5);
+    var str = "03.12.2013 21:05";
 
-    it("serialize and deserialize", function () {
-        var note = makeNote();
-        var json = makeJson();
-        expect(JSON.stringify(note)).toBe(json);
+    it("date to string", function () {
+        var note = new ViewModels.DHtmlxNote();
+        note.StartDate = date;
+        expect(note.start_date).toBe(str);
     });
 
-    function makeNote() {
+    it("string to date", function () {
         var note = new ViewModels.DHtmlxNote();
-        note.text = text;
-        note.start_date = start_date;
-        note.end_date = end_date;
-        return note;
-    }
-    ;
-
-    function makeJson() {
-        var json = "{" + "\"text\":\"" + text + "\"," + "\"start_date\":\"" + start_date + "\"," + "\"end_date\":\"" + end_date + "\"" + "}";
-        return json;
-    }
+        note.StartDate = date;
+        var result = note.StartDate;
+        expect(result.getDate()).toBe(date.getDate());
+        expect(result.getMonth()).toBe(date.getMonth());
+        expect(result.getFullYear()).toBe(date.getFullYear());
+        expect(result.getHours()).toBe(date.getHours());
+        expect(result.getMinutes()).toBe(date.getMinutes());
+    });
 });
 //# sourceMappingURL=DHtmlxNoteTests.js.map

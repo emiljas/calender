@@ -38,8 +38,8 @@ module Components {
 
         static createObjectStore(name: string): void {
             var store = IndexedDatabase.db.createObjectStore(name, {
-                keyPath: "ID",
-                autoIncrement: true
+                keyPath: "id",
+                autoIncrement: false 
             });
         }
 
@@ -47,12 +47,64 @@ module Components {
             this.waitForDatabase(() => {
                 var trans = IndexedDatabase.db.transaction([DB.ObjectStore.Note], "readwrite");
                 var store = trans.objectStore(DB.ObjectStore.Note);
-                var request = store.put(item);
-                trans.oncomplete = done;
+                var request = store.add(item);
+                if(done)
+                    trans.oncomplete = done;
             });
         }
 
-        waitForDatabase(after) {
+        delete(id, done) {
+            this.waitForDatabase(() => {
+                var db = IndexedDatabase.db;
+                var trans = db.transaction([DB.ObjectStore.Note], "readwrite");
+                var store = trans.objectStore(DB.ObjectStore.Note);
+                var request = store.delete(""+id);
+
+                trans.oncomplete = function () {
+                };
+
+                trans.onerror = function () {
+                };
+
+                //if(done)
+                //    trans.oncomplete = done;
+            });
+        }
+
+        update(item, done) {
+            this.waitForDatabase(() => {
+                this.delete(item.id, () => {
+                    this.insert(item, done);
+                });
+            });
+        }
+
+        getAll(done) {
+            this.waitForDatabase(() => {
+                var items = [];
+                var db = IndexedDatabase.db;
+                var trans = db.transaction([DB.ObjectStore.Note], "readwrite");
+                var store = trans.objectStore(DB.ObjectStore.Note);
+
+                var keyRange = IDBKeyRange.lowerBound(0);
+                var cursorRequest = store.openCursor(keyRange);
+
+                cursorRequest.onsuccess = function (e) {
+                    var result = e.target.result;
+                    if (!!result == false) {
+                        done(items);
+                        return;
+                    }
+
+                    items.push(result.value);
+                    result.continue();
+                };
+
+                cursorRequest.onerror = indexedDB.onerror;
+            });
+        }
+
+        private waitForDatabase(after) {
             var wait = () => {
                 this.waitForDatabase(after);
             };
@@ -62,28 +114,6 @@ module Components {
                 after();
         }
 
-        getAll(done) {
-            var items = [];
-            var db = IndexedDatabase.db;
-            var trans = db.transaction([DB.ObjectStore.Note], "readwrite");
-            var store = trans.objectStore(DB.ObjectStore.Note);
-
-            var keyRange = IDBKeyRange.lowerBound(0);
-            var cursorRequest = store.openCursor(keyRange);
-
-            cursorRequest.onsuccess = function (e) {
-                var result = e.target.result;
-                if (!!result == false) {
-                    done(items);
-                    return;
-                }
-
-                items.push(result.value);
-                result.continue();
-            };
-
-            cursorRequest.onerror = indexedDB.onerror;
-        }
     }
 
     IndexedDatabase.initalize();
