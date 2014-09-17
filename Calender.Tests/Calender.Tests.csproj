@@ -56,7 +56,6 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
-    <TypeScriptCompile Include="Tests\components\IndexedDatabaseTests.ts" />
     <TypeScriptCompile Include="Tests\viewModels\DHtmlxNoteTests.ts" />
   </ItemGroup>
   <ItemGroup>

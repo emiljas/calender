@@ -8,22 +8,20 @@ module Components {
     declare var IDBKeyRange;
 
     export class IndexedDatabase {
-        static db;
+        static db = null;
 
         static initalize(): void {
             if (indexedDB) {
                 var request = indexedDB.open(DB.Name, DB.Version);
 
                 request.onupgradeneeded = function (e) {
-                    var db = e.target.result;
+                    IndexedDatabase.db = e.target.result;
                     e.target.transaction.onerror = indexedDB.onerror;
-                    (() => {
-                        this.initializeObjectStores();
-                    })();
+                    IndexedDatabase.initializeObjectStores();
                 };
 
                 request.onsuccess = function (e) {
-                    this.db = e.target.result;
+                    IndexedDatabase.db = e.target.result;
                 };
             }
         }
@@ -34,22 +32,34 @@ module Components {
         }
 
         static deleteObjectStore(name: string): void {
-            if (this.db.objectStoreNames.contains(name))
-                this.db.deleteObjectStore(name);
+            if (IndexedDatabase.db.objectStoreNames.contains(name))
+                IndexedDatabase.db.deleteObjectStore(name);
         }
 
         static createObjectStore(name: string): void {
-            var store = this.db.createObjectStore(name, {
+            var store = IndexedDatabase.db.createObjectStore(name, {
                 keyPath: "ID",
                 autoIncrement: true
             });
         }
 
         insert (item, done) {
-            var trans = IndexedDatabase.db.transaction([DB.ObjectStore.Note], "readwrite");
-            var store = trans.objectStore(DB.ObjectStore.Note);
-            var request = store.put(item);
-            trans.oncomplete = done;
+            this.waitForDatabase(() => {
+                var trans = IndexedDatabase.db.transaction([DB.ObjectStore.Note], "readwrite");
+                var store = trans.objectStore(DB.ObjectStore.Note);
+                var request = store.put(item);
+                trans.oncomplete = done;
+            });
+        }
+
+        waitForDatabase(after) {
+            var wait = () => {
+                this.waitForDatabase(after);
+            };
+            if (IndexedDatabase.db === null)
+                setTimeout(wait, 100);
+            else
+                after();
         }
 
         getAll(done) {

@@ -3,6 +3,7 @@
 /// <reference path='../../js/data.ts'/>
 /// <reference path="../../js/viewmodels/dhtmlxnote.ts" />
 /// <reference path="../../js/services/notes/noteservice.ts" />
+/// <reference path="../../js/components/indexeddatabase.ts" />
 var CalenderPage;
 (function (CalenderPage) {
     "use strict";
@@ -15,6 +16,10 @@ var CalenderPage;
     }
 
     function initScheduler() {
+        var db = new Components.IndexedDatabase();
+        db.insert({ a: 5 }, function () {
+        });
+
         scheduler.init("scheduler_here", new Date(), "week");
         var conferences = [{
                 text: "aaa aa a aa",

@@ -13,16 +13,13 @@ var Components;
                 var request = indexedDB.open(DB.Name, DB.Version);
 
                 request.onupgradeneeded = function (e) {
-                    var _this = this;
-                    var db = e.target.result;
+                    IndexedDatabase.db = e.target.result;
                     e.target.transaction.onerror = indexedDB.onerror;
-                    (function () {
-                        _this.initializeObjectStores();
-                    })();
+                    IndexedDatabase.initializeObjectStores();
                 };
 
                 request.onsuccess = function (e) {
-                    this.db = e.target.result;
+                    IndexedDatabase.db = e.target.result;
                 };
             }
         };
@@ -33,22 +30,35 @@ var Components;
         };
 
         IndexedDatabase.deleteObjectStore = function (name) {
-            if (this.db.objectStoreNames.contains(name))
-                this.db.deleteObjectStore(name);
+            if (IndexedDatabase.db.objectStoreNames.contains(name))
+                IndexedDatabase.db.deleteObjectStore(name);
         };
 
         IndexedDatabase.createObjectStore = function (name) {
-            var store = this.db.createObjectStore(name, {
+            var store = IndexedDatabase.db.createObjectStore(name, {
                 keyPath: "ID",
                 autoIncrement: true
             });
         };
 
         IndexedDatabase.prototype.insert = function (item, done) {
-            var trans = IndexedDatabase.db.transaction([DB.ObjectStore.Note], "readwrite");
-            var store = trans.objectStore(DB.ObjectStore.Note);
-            var request = store.put(item);
-            trans.oncomplete = done;
+            this.waitForDatabase(function () {
+                var trans = IndexedDatabase.db.transaction([DB.ObjectStore.Note], "readwrite");
+                var store = trans.objectStore(DB.ObjectStore.Note);
+                var request = store.put(item);
+                trans.oncomplete = done;
+            });
+        };
+
+        IndexedDatabase.prototype.waitForDatabase = function (after) {
+            var _this = this;
+            var wait = function () {
+                _this.waitForDatabase(after);
+            };
+            if (IndexedDatabase.db === null)
+                setTimeout(wait, 100);
+            else
+                after();
         };
 
         IndexedDatabase.prototype.getAll = function (done) {
@@ -73,6 +83,7 @@ var Components;
 
             cursorRequest.onerror = indexedDB.onerror;
         };
+        IndexedDatabase.db = null;
         return IndexedDatabase;
     })();
     Components.IndexedDatabase = IndexedDatabase;
